@@ -99,7 +99,7 @@ impl Cfua {
     }
 
     /// Appends number `value` with `key` into the end of structure.
-    pub fn write_number<K, N>(&mut self, key: K, value: N) -> &mut Self
+    pub fn write_number<K, N>(mut self, key: K, value: N) -> Self
     where K: ToString,
           N: Into<Number> {
         self.data.insert(key.to_string(), CfuaType::Number(value.into()));
@@ -107,14 +107,14 @@ impl Cfua {
     }
 
     /// Appends string `value` with `key` into the end of structure.
-    pub fn write_string<S>(&mut self, key: S, value: S) -> &mut Self
+    pub fn write_string<S>(mut self, key: S, value: S) -> Self
     where S: ToString {
         self.data.insert(key.to_string(), CfuaType::String(value.to_string()));
         self
     }
 
     /// Appends logic `value` with `key` into the end of structure.
-    pub fn write_bool<K>(&mut self, key: K, value: bool) -> &mut Self
+    pub fn write_bool<K>(mut self, key: K, value: bool) -> Self
     where K: ToString {
         self.data.insert(key.to_string(), CfuaType::Boolean(value));
         self
@@ -122,7 +122,7 @@ impl Cfua {
 
     /// Appends section (`@key`) containing key-value
     /// pairs into the end of structure.
-    pub fn write_section<K, F>(&mut self, key: K, content: F) -> &mut Self
+    pub fn write_section<K, F>(mut self, key: K, content: F) -> Self
     where K: ToString,
           F: Fn(&mut Cfua) -> Cfua {
         self.data.insert(key.to_string(), CfuaType::Section(content(&mut self.clone()).data));
@@ -131,7 +131,7 @@ impl Cfua {
 
     /// Appends array into the end of structure. The `value` is constructed
     /// from `CfuaNumberArray`, `CfuaStringArray` or `CfuaBoolArray`.
-    pub fn write_array<K, F>(&mut self, key: K, value: F) -> &mut Self 
+    pub fn write_array<K, F>(mut self, key: K, value: F) -> Self 
     where K: ToString,
           F: ToCfuaArray {
         self.data.insert(key.to_string(), value.finish());
