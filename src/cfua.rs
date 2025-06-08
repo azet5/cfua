@@ -1,10 +1,12 @@
 #![deny(unsafe_code)]
 
-use std::collections::HashMap;
-
 use crate::array::ToCfuaArray;
 
-type CfuaKV = HashMap<String, CfuaType>;
+// type CfuaKV = HashMap<String, CfuaType>;
+type CfuaKV = Vec<(String, CfuaType)>;
+// pub(crate) struct CfuaKV {
+//     data: Vec<(String, CfuaType)>,
+// }
 
 /// Main library type representing cfua data. To begin working with cfua data,
 /// see `Cfua::from_file()` for reading existing data, or `Cfua::create()`
@@ -94,7 +96,7 @@ impl Cfua {
     /// Creates empty cfua structure, which may be later saved.
     pub fn create() -> Self {
         Self {
-            data: HashMap::new(),
+            data: Vec::new(),
         }
     }
 
@@ -102,21 +104,21 @@ impl Cfua {
     pub fn write_number<K, N>(mut self, key: K, value: N) -> Self
     where K: ToString,
           N: Into<Number> {
-        self.data.insert(key.to_string(), CfuaType::Number(value.into()));
+        self.data.push((key.to_string(), CfuaType::Number(value.into())));
         self
     }
 
     /// Appends string `value` with `key` into the end of structure.
     pub fn write_string<S>(mut self, key: S, value: S) -> Self
     where S: ToString {
-        self.data.insert(key.to_string(), CfuaType::String(value.to_string()));
+        self.data.push((key.to_string(), CfuaType::String(value.to_string())));
         self
     }
 
     /// Appends logic `value` with `key` into the end of structure.
     pub fn write_bool<K>(mut self, key: K, value: bool) -> Self
     where K: ToString {
-        self.data.insert(key.to_string(), CfuaType::Boolean(value));
+        self.data.push((key.to_string(), CfuaType::Boolean(value)));
         self
     }
 
@@ -125,7 +127,7 @@ impl Cfua {
     pub fn write_section<K, F>(mut self, key: K, content: F) -> Self
     where K: ToString,
           F: Fn(&mut Cfua) -> Cfua {
-        self.data.insert(key.to_string(), CfuaType::Section(content(&mut self.clone()).data));
+        self.data.push((key.to_string(), CfuaType::Section(content(&mut self.clone()).data)));
         self
     }
 
@@ -134,7 +136,7 @@ impl Cfua {
     pub fn write_array<K, F>(mut self, key: K, value: F) -> Self 
     where K: ToString,
           F: ToCfuaArray {
-        self.data.insert(key.to_string(), value.finish());
+        self.data.push((key.to_string(), value.finish()));
         self
     }
 }
@@ -149,9 +151,9 @@ mod tests {
             .write_bool("is-cfua", true)
             .write_string("purpose", "Testing builder functions");
 
-        let mut map: CfuaKV = HashMap::with_capacity(2);
-        map.insert("is-cfua".to_string(), CfuaType::Boolean(true));
-        map.insert("purpose".to_string(), CfuaType::String("Testing builder functions".to_string()));
+        let mut map: CfuaKV = Vec::with_capacity(2);
+        map.push(("is-cfua".to_string(), CfuaType::Boolean(true)));
+        map.push(("purpose".to_string(), CfuaType::String("Testing builder functions".to_string())));
 
         assert_eq!(from_builder, Cfua { data: map });
     }
