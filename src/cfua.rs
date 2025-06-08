@@ -9,7 +9,7 @@ type CfuaKV = HashMap<String, CfuaType>;
 /// Main library type representing cfua data. To begin working with cfua data,
 /// see `Cfua::from_file()` for reading existing data, or `Cfua::create()`
 /// for writing data.
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Cfua {
     data: CfuaKV,
 }
@@ -17,7 +17,7 @@ pub struct Cfua {
 /// Somewhat optimised wrapper type storing either of `i64` or `f64` number.
 /// Generally should not be created directly; use
 /// `Cfua::write_number()` instead.
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Number {
     int: Option<i64>,
     float: Option<f64>,
@@ -79,7 +79,7 @@ into_number_int!(u32);
 into_number_float!(f32);
 into_number_float!(f64);
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) enum CfuaType {
     Number(Number),
     String(String),
@@ -136,5 +136,23 @@ impl Cfua {
           F: ToCfuaArray {
         self.data.insert(key.to_string(), value.finish());
         self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic_structure() {
+        let from_builder = Cfua::create()
+            .write_bool("is-cfua", true)
+            .write_string("purpose", "Testing builder functions");
+
+        let mut map: CfuaKV = HashMap::with_capacity(2);
+        map.insert("is-cfua".to_string(), CfuaType::Boolean(true));
+        map.insert("purpose".to_string(), CfuaType::String("Testing builder functions".to_string()));
+
+        assert_eq!(from_builder, Cfua { data: map });
     }
 }

@@ -24,3 +24,24 @@ impl Cfua {
         Ok(Cfua::create())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use super::*;
+
+    #[test]
+    fn from_string_test() {
+        let example =
+r"number-value: 1
+string-value: 'Testing from_string() method
+another-number: -0.123
+";
+        let structure = Cfua::create()
+            .write_number("number-value", 1)
+            .write_string("string-value", "Testing from_string() method")
+            .write_number("another-number", -0.123);
+        assert_eq!(Cfua::from_string(example).unwrap(), structure);
+    }
+}
