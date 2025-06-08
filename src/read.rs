@@ -1,6 +1,6 @@
 use std::{fs, io, path::Path};
 
-use crate::Cfua;
+use crate::{parser::ParserData, Cfua};
 
 impl Cfua {
     /// Reads cfua data from file with specified `path`.
@@ -20,8 +20,7 @@ impl Cfua {
     pub fn from_string<S>(string: S) -> Result<Cfua, ()>
     where S: ToString {
         eprintln!("{}", &string.to_string());
-        // TODO: actually parse string
-        Ok(Cfua::create())
+        ParserData::new(string.to_string()).parse()
     }
 }
 

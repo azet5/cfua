@@ -9,3 +9,5 @@ pub use array::CfuaStringArray;
 
 mod read;
 mod write;
+
+mod parser;
