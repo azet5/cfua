@@ -7,6 +7,9 @@ pub use array::CfuaBoolArray;
 pub use array::CfuaNumberArray;
 pub use array::CfuaStringArray;
 
+mod read;
+mod write;
+
 #[cfg(test)]
 mod tests {
     use super::*;
