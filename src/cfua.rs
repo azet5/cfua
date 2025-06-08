@@ -2,6 +2,8 @@
 
 use std::collections::HashMap;
 
+use crate::array::ToCfuaArray;
+
 type CfuaKV = HashMap<String, CfuaType>;
 
 /// Main library type representing cfua data. To begin working with cfua data,
@@ -78,11 +80,10 @@ into_number_float!(f32);
 into_number_float!(f64);
 
 #[derive(Debug, Clone)]
-enum CfuaType {
+pub(crate) enum CfuaType {
     Number(Number),
     String(String),
     Boolean(bool),
-    /// TODO: create wrapper structure for storing and safe creating arrays
     Array(Vec<CfuaType>),
     /// A section, as defined by `@` sign. Note that section's name
     /// is stored as a value's key.
@@ -125,6 +126,15 @@ impl Cfua {
     where K: ToString,
           F: Fn(&mut Cfua) -> Cfua {
         self.data.insert(key.to_string(), CfuaType::Section(content(&mut self.clone()).data));
+        self
+    }
+
+    /// Appends array into the end of structure. The `value` is constructed
+    /// from `CfuaNumberArray`, `CfuaStringArray` or `CfuaBoolArray`.
+    pub fn write_array<K, F>(&mut self, key: K, value: F) -> &mut Self 
+    where K: ToString,
+          F: ToCfuaArray {
+        self.data.insert(key.to_string(), value.finish());
         self
     }
 }
