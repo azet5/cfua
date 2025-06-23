@@ -41,7 +41,7 @@ impl ParserData {
 
     fn section_char(&mut self, char: char) {
         if char == '\n' {
-            self.state = State::Reading
+            self.state = State::Reading;
             // self.data.write_section(self.key_buffer);
         } else {
             self.key_buffer.push(char);

@@ -89,7 +89,7 @@ pub(crate) enum CfuaType {
     Array(Vec<CfuaType>),
     /// A section, as defined by `@` sign. Note that section's name
     /// is stored as a value's key.
-    Section(CfuaKV),
+    Section(()),
 }
 
 impl Cfua {
@@ -124,10 +124,9 @@ impl Cfua {
 
     /// Appends section (`@key`) containing key-value
     /// pairs into the end of structure.
-    pub fn write_section<K, F>(mut self, key: K, content: F) -> Self
-    where K: ToString,
-          F: Fn(&mut Cfua) -> Cfua {
-        self.data.push((key.to_string(), CfuaType::Section(content(&mut self.clone()).data)));
+    pub fn write_section<K>(mut self, key: K) -> Self
+    where K: ToString {
+        self.data.push((key.to_string(), CfuaType::Section(())));
         self
     }
 
