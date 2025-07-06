@@ -1,6 +1,5 @@
 mod cfua;
 pub use cfua::Cfua;
-pub use cfua::Number;
 
 mod array;
 pub use array::CfuaIntegerArray;
