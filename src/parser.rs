@@ -15,7 +15,7 @@ enum State {
     EndOfData,
 }
 
-pub(crate) struct ParserData {
+pub struct ParserData {
     input: String,
     key_buffer: String,
     value_buffer: CfuaType,
@@ -29,7 +29,7 @@ impl ParserData {
             input,
             key_buffer: String::with_capacity(256),
             // its value doesn't matter as it will be replaced before using
-            value_buffer: CfuaType::Number(0.into()),
+            value_buffer: CfuaType::Integer(0),
             state: State::Reading,
             data: Cfua::create(),
         }

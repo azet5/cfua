@@ -82,8 +82,9 @@ into_number_float!(f32);
 into_number_float!(f64);
 
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) enum CfuaType {
-    Number(Number),
+pub enum CfuaType {
+    Integer(i64),
+    Float(f64),
     String(String),
     Boolean(bool),
     Array(Vec<CfuaType>),
@@ -100,11 +101,16 @@ impl Cfua {
         }
     }
 
-    /// Appends number `value` with `key` into the end of structure.
-    pub fn write_number<K, N>(&mut self, key: K, value: N)
-    where K: ToString,
-          N: Into<Number> {
-        self.data.push((key.to_string(), CfuaType::Number(value.into())));
+    /// Appends integer `value` with `key` into the end of structure.
+    pub fn write_integer<K, I>(&mut self, key: K, value: i64)
+    where K: ToString {
+        self.data.push((key.to_string(), CfuaType::Integer(value)));
+    }
+
+    /// Appends float `value` with `key` into the end of structure.
+    pub fn write_float<K, I>(&mut self, key: K, value: f64)
+    where K: ToString {
+        self.data.push((key.to_string(), CfuaType::Float(value)));
     }
 
     /// Appends string `value` with `key` into the end of structure.

@@ -15,9 +15,8 @@ pub struct CfuaBoolArray {
 }
 
 impl CfuaNumberArray {
-    pub fn push<V>(&mut self, value: V) -> &mut Self
-    where V: Into<Number> {
-        self.elements.push(CfuaType::Number(value.into()));
+    pub fn push<V>(&mut self, value: i64) -> &mut Self {
+        self.elements.push(CfuaType::Integer(value));
         self
     }
 
@@ -49,7 +48,7 @@ impl CfuaBoolArray {
     }
 }
 
-pub(crate) trait ToCfuaArray {
+pub trait ToCfuaArray {
     fn finish(self) -> CfuaType;
 }
 
