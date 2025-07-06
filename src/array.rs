@@ -1,60 +1,33 @@
-use crate::{cfua::CfuaType, Number};
+use crate::cfua::CfuaType;
 
 type CfuaArrayTy = Vec<CfuaType>;
-
-pub struct CfuaNumberArray {
-    elements: CfuaArrayTy,
-}
-
-pub struct CfuaStringArray {
-    elements: CfuaArrayTy,
-}
-
-pub struct CfuaBoolArray {
-    elements: CfuaArrayTy,
-}
-
-impl CfuaNumberArray {
-    pub fn push<V>(&mut self, value: i64) -> &mut Self {
-        self.elements.push(CfuaType::Integer(value));
-        self
-    }
-
-    pub fn finish(self) -> CfuaType {
-        CfuaType::Array(self.elements)
-    }
-}
-
-impl CfuaStringArray {
-    pub fn push<V>(&mut self, value: V) -> &mut Self
-    where V: ToString {
-        self.elements.push(CfuaType::String(value.to_string()));
-        self
-    }
-
-    pub fn finish(self) -> CfuaType {
-        CfuaType::Array(self.elements)
-    }
-}
-
-impl CfuaBoolArray {
-    pub fn push<V>(&mut self, value: bool) -> &mut Self {
-        self.elements.push(CfuaType::Boolean(value));
-        self
-    }
-
-    pub fn finish(self) -> CfuaType {
-        CfuaType::Array(self.elements)
-    }
-}
 
 pub trait ToCfuaArray {
     fn finish(self) -> CfuaType;
 }
 
-macro_rules! impl_cfua_array {
-    ($tt: ty) => {
-        impl ToCfuaArray for $tt {
+
+macro_rules! array_type {
+    ($name: ident<$ty: ty> { $enumitem: expr }) => {
+        pub struct $name {
+            elements: CfuaArrayTy,
+        }
+
+        impl $name {
+            /// Creates new instance of `$name`.
+            pub fn new() -> Self {
+                Self {
+                    elements: Vec::new(),
+                }
+            }
+
+            pub fn push(&mut self, value: $ty) -> &mut Self {
+                self.elements.push($enumitem(value));
+                self
+            }
+        }
+
+        impl ToCfuaArray for $name {
             fn finish(self) -> CfuaType {
                 CfuaType::Array(self.elements)
             }
@@ -62,6 +35,7 @@ macro_rules! impl_cfua_array {
     };
 }
 
-impl_cfua_array!(CfuaNumberArray);
-impl_cfua_array!(CfuaStringArray);
-impl_cfua_array!(CfuaBoolArray);
+array_type!(CfuaIntegerArray<i64> {CfuaType::Integer});
+array_type!(CfuaFloatArray<f64> {CfuaType::Float});
+array_type!(CfuaBooleanArray<bool> {CfuaType::Boolean});
+array_type!(CfuaStringArray<String> {CfuaType::String});
