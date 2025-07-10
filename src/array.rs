@@ -21,7 +21,7 @@ macro_rules! array_type {
                 }
             }
 
-            pub fn push(&mut self, value: $ty) -> &mut Self {
+            pub fn push(mut self, value: $ty) -> Self {
                 self.elements.push($enumitem(value));
                 self
             }
