@@ -37,10 +37,10 @@ r"number-value: 1
 string-value: 'Testing from_string() method
 another-number: -0.123
 ";
-        let structure = Cfua::create()
-            .write_number("number-value", 1)
-            .write_string("string-value", "Testing from_string() method")
-            .write_number("another-number", -0.123);
+        let mut structure = Cfua::create();
+        structure.write_integer("number-value", 1);
+        structure.write_string("string-value", "Testing from_string() method");
+        structure.write_float("another-number", -0.123);
         assert_eq!(Cfua::from_string(example).unwrap(), structure);
     }
 }

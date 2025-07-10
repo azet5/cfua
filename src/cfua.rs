@@ -82,14 +82,14 @@ mod tests {
 
     #[test]
     fn basic_structure() {
-        let from_builder = Cfua::create()
-            .write_bool("is-cfua", true)
-            .write_string("purpose", "Testing builder functions");
+        let mut data = Cfua::create();
+        data.write_bool("is-cfua", true);
+        data.write_string("purpose", "Testing builder functions");
 
         let mut map: CfuaKV = Vec::with_capacity(2);
         map.push(("is-cfua".to_string(), CfuaType::Boolean(true)));
         map.push(("purpose".to_string(), CfuaType::String("Testing builder functions".to_string())));
 
-        assert_eq!(from_builder, Cfua { data: map });
+        assert_eq!(data, Cfua { data: map });
     }
 }
