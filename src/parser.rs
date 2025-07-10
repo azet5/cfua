@@ -1,8 +1,6 @@
-use std::str::Chars;
+use std::{error::Error, fmt::Display, io, str::Chars};
 
 use crate::{cfua::CfuaType, Cfua};
-
-type CfuaError = ();
 
 enum State {
     Reading,
@@ -29,6 +27,35 @@ pub struct ParserData {
     value_type: ValueType,
     state: State,
     data: Cfua,
+}
+
+#[derive(Debug)]
+pub enum CfuaError {
+    EmptyValue,
+    NonGraphicChar,
+    InvalidChar,
+    InvalidKeyChar(char),
+    InvalidHyphenInKey,
+    InvalidSectionChar(char),
+    InvalidHyphenInSection,
+    UnknownKeyword(String),
+    IoError(io::Error),
+}
+
+impl Display for CfuaError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CfuaError::EmptyValue => write!(f, "value must not be empty"),
+            CfuaError::NonGraphicChar => write!(f, "non-garphic char"),
+            CfuaError::InvalidChar => write!(f, "invalid syntax"),
+            CfuaError::InvalidKeyChar(ch) => write!(f, "invalid char: '{ch}' in key name"),
+            CfuaError::InvalidHyphenInKey => write!(f, "hyphen not allowed at the beginning of key name"),
+            CfuaError::InvalidSectionChar(ch) => write!(f, "invalid char: '{ch}' in section name"),
+            CfuaError::InvalidHyphenInSection => write!(f, "hyphen not allowed at the beginning of section name"),
+            CfuaError::UnknownKeyword(kw) => write!(f, "unknown keyword: '{kw}'"),
+            CfuaError::IoError(err) => write!(f, "io error: {err}"),
+        }
+    }
 }
 
 impl ParserData {
@@ -58,7 +85,7 @@ impl ParserData {
             } else if self.value_buffer == "-inf" {
                 self.data.write_float(self.key_buffer.clone(), f64::NEG_INFINITY);
             } else {
-                return Err(());
+                return Err(CfuaError::UnknownKeyword(self.value_buffer.clone()));
             }
         }
 
@@ -77,10 +104,10 @@ impl ParserData {
                 if self.key_buffer.len() > 1 {
                     self.key_buffer.push(char);
                 } else {
-                    return Err(());
+                    return Err(CfuaError::InvalidHyphenInSection);
                 }
             },
-            _ => return Err(()),
+            _ => return Err(CfuaError::InvalidSectionChar(char)),
         }
 
         Ok(())
@@ -93,12 +120,12 @@ impl ParserData {
             '-' => if self.key_buffer.len() > 1 {
                 self.key_buffer.push(char);
             } else {
-                return Err(());
+                return Err(CfuaError::InvalidHyphenInKey);
             },
             ' ' => if !self.key_buffer.is_empty() {
-                return Err(());
+                return Err(CfuaError::InvalidKeyChar(char));
             },
-            _ => return Err(()),
+            _ => return Err(CfuaError::InvalidKeyChar(char)),
         }
 
         Ok(())
@@ -112,7 +139,7 @@ impl ParserData {
             self.value_buffer.clear();
             return self.value_char(char);
         } else {
-            Err(())
+            Err(CfuaError::NonGraphicChar)
         }
     }
 
@@ -125,7 +152,7 @@ impl ParserData {
                 'h' |
                 'o' |
                 '0'..'9' => self.value_type = ValueType::Number,
-                '\n' => return Err(()),
+                '\n' => return Err(CfuaError::EmptyValue),
                 _ => {},
             }
         } else {
@@ -152,7 +179,7 @@ impl ParserData {
             '@' => self.state = State::SectionName,
             'a'..'z' => self.state = State::Key,
             '\n' => {},
-            _ => return Err(()),
+            _ => return Err(CfuaError::InvalidChar),
         }
 
         Ok(())
