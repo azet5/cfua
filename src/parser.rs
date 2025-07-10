@@ -14,9 +14,8 @@ enum State {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum ValueType {
     Number,
-    Float,
     String,
-    Boolean,
+    Other,
     Array(Box<ValueType>),
 }
 
@@ -73,6 +72,12 @@ impl ParserData {
     fn push_value(&mut self) -> Result<(), CfuaError> {
         if self.value_type == ValueType::String {
             self.data.write_string(self.key_buffer.clone(), self.value_buffer.strip_prefix('\'').unwrap().to_string());
+        } else if self.value_type == ValueType::Number {
+            if self.value_buffer.contains(".") {
+                self.data.write_float(self.key_buffer.clone(), self.value_buffer.clone().parse().unwrap());
+            } else {
+                self.data.write_integer(self.key_buffer.clone(), self.value_buffer.clone().parse().unwrap());
+            }
         } else {
             if self.value_buffer == "true" {
                 self.data.write_bool(self.key_buffer.clone(), true);
@@ -89,6 +94,8 @@ impl ParserData {
             }
         }
 
+        self.key_buffer.clear();
+        self.value_buffer.clear();
         self.state = State::Reading;
         Ok(())
     }
@@ -136,7 +143,6 @@ impl ParserData {
             Ok(())
         } else if char.is_ascii_graphic() {
             self.state = State::Value;
-            self.value_buffer.clear();
             return self.value_char(char);
         } else {
             Err(CfuaError::NonGraphicChar)
@@ -153,7 +159,7 @@ impl ParserData {
                 'o' |
                 '0'..'9' => self.value_type = ValueType::Number,
                 '\n' => return Err(CfuaError::EmptyValue),
-                _ => {},
+                _ => self.value_type = ValueType::Other,
             }
         } else {
             if char == '\n' {
@@ -177,7 +183,10 @@ impl ParserData {
         match char {
             '%' => self.state = State::Comment,
             '@' => self.state = State::SectionName,
-            'a'..'z' => self.state = State::Key,
+            'a'..'z' => {
+                self.key_buffer.push(char);
+                self.state = State::Key;
+            },
             '\n' => {},
             _ => return Err(CfuaError::InvalidChar),
         }
