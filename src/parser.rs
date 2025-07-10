@@ -1,6 +1,6 @@
-use std::{error::Error, fmt::Display, io, str::Chars};
+use std::{fmt::Display, io};
 
-use crate::{cfua::CfuaType, Cfua};
+use crate::Cfua;
 
 enum State {
     Reading,
@@ -212,21 +212,6 @@ impl ParserData {
         while let Some(char) = chars.next() {
             self.read_char(char)?;
         }
-
-        // loop {
-        //     match self.state {
-        //         State::Reading => self.advance(&mut chars),
-        //         State::Key => todo!(),
-        //         State::Separator => todo!(),
-        //         State::ValueString => todo!(),
-        //         State::ValueNumber => todo!(),
-        //         State::ValueBool => todo!(),
-        //         State::ValueArray => todo!(),
-        //         State::SectionName => todo!(),
-        //         State::Comment => todo!(),
-        //         State::EndOfData => break,
-        //     }
-        // }
 
         Ok(self.data.clone())
     }

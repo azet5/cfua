@@ -1,4 +1,4 @@
-use std::{fs, io, path::Path};
+use std::{fs, path::Path};
 
 use crate::{parser::{CfuaError, ParserData}, Cfua};
 
@@ -10,7 +10,6 @@ impl Cfua {
     where P: AsRef<Path> {
         match fs::read_to_string(path) {
             Ok(content) => Cfua::from_string(content),
-            // TODO: implement custom error type
             Err(e) => Err(CfuaError::IoError(e)),
         }
     }
