@@ -37,13 +37,13 @@ impl Cfua {
     }
 
     /// Appends integer `value` with `key` into the end of structure.
-    pub fn write_integer<K, I>(&mut self, key: K, value: i64)
+    pub fn write_integer<K>(&mut self, key: K, value: i64)
     where K: ToString {
         self.data.push((key.to_string(), CfuaType::Integer(value)));
     }
 
     /// Appends float `value` with `key` into the end of structure.
-    pub fn write_float<K, I>(&mut self, key: K, value: f64)
+    pub fn write_float<K>(&mut self, key: K, value: f64)
     where K: ToString {
         self.data.push((key.to_string(), CfuaType::Float(value)));
     }
