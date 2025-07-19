@@ -6,6 +6,11 @@ pub trait ToCfuaArray {
     fn finish(self) -> CfuaType;
 }
 
+impl ToCfuaArray for Vec<CfuaType> {
+    fn finish(self) -> CfuaType {
+        CfuaType::Array(self)
+    }
+}
 
 macro_rules! array_type {
     ($name: ident<$ty: ty> { $enumitem: expr }) => {
