@@ -57,10 +57,10 @@ strings-array: [
     #'String 1
     #'String 2.1
      'String 2.2
-    #'String 3        
+    #'String 3
 ]
 special-number: -inf
-par1: head
+par-: head
 par: 'head
 x:-o7
 apostrophes: '''''''
@@ -78,13 +78,14 @@ apostrophes: '''''''
             .push(34)
             .push(55)
         );
+        structure.write_string("multiline", "First Line\nSecond Line\nThird Line");
         structure.write_array("strings-array", CfuaStringArray::new()
             .push("String 1".to_string())
             .push("String 2.1\nString 2.2".to_string())
             .push("String 3".to_string())
         );
         structure.write_float("special-number", f64::NEG_INFINITY);
-        structure.write_integer("par1", 0xead);
+        structure.write_integer("par-", 0xead);
         structure.write_string("par", "head");
         structure.write_integer("x", -0o7);
         structure.write_string("apostrophes", "''''''");
