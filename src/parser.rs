@@ -1,4 +1,4 @@
-use std::{fmt::Display, io, ops::Index};
+use std::{fmt::Display, io};
 
 use crate::{cfua::CfuaType, Cfua};
 
@@ -26,6 +26,7 @@ enum ValueType {
     Other,
 }
 
+/// Structure storing data needed for parser.
 pub struct ParserData {
     input: String,
     key_buffer: String,
@@ -36,6 +37,7 @@ pub struct ParserData {
     data: Cfua,
 }
 
+/// Errors which may occur while parsing data.
 #[derive(Debug)]
 pub enum CfuaError {
     EmptyValue,
@@ -76,6 +78,7 @@ impl Display for CfuaError {
 }
 
 impl ParserData {
+    /// Creates empty `ParserData` structure from `input` string.
     pub fn new(input: String) -> Self {
         Self {
             input,
@@ -96,6 +99,7 @@ impl ParserData {
             if self.value_buffer.contains(".") {
                 self.data.write_float(self.key_buffer.clone(), self.value_buffer.clone().parse().unwrap());
             } else {
+                // TODO: refactor repeating code
                 if self.value_buffer.starts_with('-') {
                     if self.value_buffer == "-inf" {
                         self.data.write_float(self.key_buffer.clone(), f64::NEG_INFINITY);
@@ -201,6 +205,7 @@ impl ParserData {
     }
 
     fn value_char(&mut self, char: char) -> Result<(), CfuaError> {
+        // try to guess value type (when buffer is empty)
         if self.value_buffer.len() == 0 {
             match char {
                 '\'' => self.value_type = ValueType::String,
@@ -217,6 +222,7 @@ impl ParserData {
                 '\n' => return Err(CfuaError::EmptyValue),
                 _ => self.value_type = ValueType::Other,
             }
+        // else, push consecutive chars until newline is approached
         } else {
             if char == '\n' {
                 if self.value_type == ValueType::String {
@@ -263,6 +269,8 @@ impl ParserData {
 
     fn array_char(&mut self, char: char) -> Result<(), CfuaError> {
         if self.value_buffer.len() == 0 {
+            // `State::ArrayNormal(Some(false)` is set when there is
+            // string element being pushed
             if self.state != State::ArrayNormal(Some(false)) {
                 match char {
                     ' ' |
@@ -291,6 +299,7 @@ impl ParserData {
                     },
                     _ => return Err(CfuaError::InvalidChar),
                 }
+            // create string value
             } else {
                 if self.value_type == ValueType::String {
                     self.value_buffer.push(char);
@@ -298,6 +307,9 @@ impl ParserData {
             }
         } else {
             match self.state {
+                // in "simple" array syntax an array element is pushed
+                // when comma `,` sign is reached or when an array
+                // is ended with `]`
                 State::ArraySimple => if char == ',' {
                     return self.array_push_value();
                 } else if char == ']' {
@@ -310,11 +322,13 @@ impl ParserData {
                 } else {
                     self.value_buffer.push(char);
                 },
+                // while parsing array element
                 State::ArrayNormal(Some(false)) => if char == '\n' {
                     self.state = State::ArrayNormal(Some(true));
                 } else {
                     self.value_buffer.push(char);
                 },
+                // reached after newline while parsing array element
                 State::ArrayNormal(Some(true)) => match char {
                     '\'' => if self.value_type == ValueType::String {
                         self.value_buffer.push('\n');
@@ -352,6 +366,8 @@ impl ParserData {
             '%' => self.state = State::Comment,
             '@' => self.state = State::SectionName,
             'a'..'z' => {
+                // reached after newline -- it means that value is not
+                // continued and new key begins
                 let result = if self.value_type == ValueType::String && self.value_buffer.len() > 1 {
                     self.push_value()
                 } else { Ok(()) };
@@ -360,6 +376,7 @@ impl ParserData {
                 self.state = State::Key;
                 return result;
             },
+            // if there is an `'` at newline, then there is multiline string
             '\'' => if self.value_buffer.len() > 0 {
                 self.value_buffer.push('\n');
                 self.state = State::Value;
@@ -371,19 +388,27 @@ impl ParserData {
         Ok(())
     }
 
+    // reads char
     fn read_char(&mut self, char: char) -> Result<(), CfuaError> {
         match self.state {
+            // generic state -- in the beginning, after pushing value
             State::Reading => self.basic_char(char),
+            // reading key
             State::Key => self.key_char(char),
+            // after reaching colon `:`
             State::Separator => self.separator_char(char),
+            // reading / parsing value
             State::Value => self.value_char(char),
             State::ArraySimple |
             State::ArrayNormal(_) => self.array_char(char),
+            // reading section name (after `@`)
             State::SectionName => self.section_char(char),
+            // reading comment (after `%`)
             State::Comment => self.comment_char(char),
         }
     }
 
+    /// Parses string given while creating structure.
     pub fn parse(&mut self) -> Result<Cfua, CfuaError> {
         let input = self.input.clone();
         let mut chars = input.chars();
