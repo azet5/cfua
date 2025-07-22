@@ -92,7 +92,6 @@ impl ParserData {
     }
 
     fn push_value(&mut self) -> Result<(), CfuaError> {
-        eprintln!("\t{}", &self.value_buffer);
         if self.value_type == ValueType::String {
             self.data.write_string(self.key_buffer.clone(), self.value_buffer.strip_prefix('\'').unwrap().to_string());
         } else if self.value_type == ValueType::Number {
@@ -176,7 +175,6 @@ impl ParserData {
         match char {
             ':' => {
                 self.state = State::Separator;
-                eprintln!("{}:", &self.key_buffer);
             },
             'a'..'z' => self.key_buffer.push(char),
             '-' => if self.key_buffer.len() > 1 {
@@ -259,7 +257,7 @@ impl ParserData {
             },
             ValueType::Other => return Err(CfuaError::InvalidArrayValue(self.value_buffer.clone())),
         }
-        eprintln!("{}", &self.value_buffer);
+        
         self.value_buffer.clear();
         if self.state == State::ArrayNormal(Some(true)) {
             self.state = State::ArrayNormal(None);
