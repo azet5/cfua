@@ -74,6 +74,61 @@ impl Cfua {
           F: ToCfuaArray {
         self.data.push((key.to_string(), value.finish()));
     }
+
+    /// Searches for integer stored within `key`
+    /// and returns its value if found.
+    pub fn read_integer<K>(&self, key: K) -> Option<i64>
+    where K: ToString {
+        if let Some((_, CfuaType::Integer(i))) = self.data.iter().find(|p| p.0 == key.to_string()) {
+            Some(*i)
+        } else {
+            None
+        }
+    }
+
+    /// Searches for float stored within `key`
+    /// and returns its value if found.
+    pub fn read_float<K>(&self, key: K) -> Option<f64>
+    where K: ToString {
+        if let Some((_, CfuaType::Float(f))) = self.data.iter().find(|p| p.0 == key.to_string()) {
+            Some(*f)
+        } else {
+            None
+        }
+    }
+
+    /// Searches for string stored within `key`
+    /// and returns its value if found.
+    pub fn read_string<K>(&self, key: K) -> Option<String>
+    where K: ToString {
+        if let Some((_, CfuaType::String(s))) = self.data.iter().find(|p| p.0 == key.to_string()) {
+            Some(s.clone())
+        } else {
+            None
+        }
+    }
+
+    /// Searches for boolean stored within `key`
+    /// and returns its value if found.
+    pub fn read_bool<K>(&self, key: K) -> Option<bool>
+    where K: ToString {
+        if let Some((_, CfuaType::Boolean(b))) = self.data.iter().find(|p| p.0 == key.to_string()) {
+            Some(*b)
+        } else {
+            None
+        }
+    }
+
+    /// Searches for array stored within `key`
+    /// and returns its copy as `Vec` if found.
+    pub fn read_array<K>(&self, key: K) -> Option<Vec<CfuaType>>
+    where K: ToString {
+        if let Some((_, CfuaType::Array(v))) = self.data.iter().find(|p| p.0 == key.to_string()) {
+            Some(v.clone())
+        } else {
+            None
+        }
+    }
 }
 
 #[cfg(test)]
