@@ -129,6 +129,11 @@ impl Cfua {
             None
         }
     }
+
+    /// Returns a copy of all data stored in key-value pairs.
+    pub fn get_all(&self) -> Vec<(String, CfuaType)> {
+        self.data.clone()
+    }
 }
 
 #[cfg(test)]
