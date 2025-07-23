@@ -49,6 +49,7 @@ pub struct Cfua {
     data: CfuaKV,
 }
 
+/// An enum containing possible value types stored in cfua file.
 #[derive(Debug, Clone, PartialEq)]
 pub enum CfuaType {
     Integer(i64),
