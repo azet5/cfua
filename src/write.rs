@@ -73,7 +73,7 @@ impl ToString for Cfua {
 
 #[cfg(test)]
 mod tests {
-    use crate::{array::ToCfuaArray, Cfua, CfuaIntegerArray, CfuaStringArray};
+    use crate::{Cfua, array::{CfuaIntegerArray, CfuaStringArray}};
 
     #[test]
     fn to_string_basic() {

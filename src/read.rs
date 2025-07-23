@@ -25,9 +25,7 @@ impl Cfua {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
-    use crate::{array::ToCfuaArray, CfuaIntegerArray, CfuaStringArray};
+    use crate::array::{CfuaIntegerArray, CfuaStringArray};
 
     use super::*;
 
