@@ -8,9 +8,38 @@ type CfuaKV = Vec<(String, CfuaType)>;
 //     data: Vec<(String, CfuaType)>,
 // }
 
-/// Main library type representing cfua data. To begin working with cfua data,
-/// see `Cfua::from_file()` for reading existing data, or `Cfua::create()`
-/// for writing data.
+/// Main library type representing cfua data.
+/// 
+/// To begin working with cfua data, you can either read from string data
+/// (see either [`from_file_path`] or [`from_string`]), or write data
+/// with code, by creating an empty struct with [`create`].
+/// 
+/// ## Examples
+/// 
+/// To further read data, use appropriate reading functions.
+/// 
+/// ```
+/// let data: Cfua = Cfua::from_file_path("example.cfua");
+/// let example_string: String = data.read_string("example_string").unwrap();
+/// let example_number: i64 = data.read_int("example_number").unwrap();
+/// ```
+/// 
+/// To further write data, use appropriate writing functions.
+/// After finishing, use [`to_string`] function to convert data into string,
+/// which can be, for example, written to file.
+/// 
+/// ```
+/// let mut data: Cfua = Cfua::create();
+/// data.write_string("example_string", "Hello, world!");
+/// data.write_int("example_number", 42);
+/// let str_data: String = data.to_string();
+/// // do something with string
+/// ```
+/// 
+/// [`from_file_path`]: self::Cfua::from_file_path
+/// [`from_string`]: self::Cfua::from_string
+/// [`create`]: self::Cfua::create
+/// [`to_string`]: self::Cfua::to_string
 #[derive(Debug, Clone, PartialEq)]
 pub struct Cfua {
     data: CfuaKV,
@@ -54,14 +83,13 @@ impl Cfua {
         self.data.push((key.to_string(), CfuaType::String(value.to_string())));
     }
 
-    /// Appends logic `value` with `key` into the end of structure.
+    /// Appends boolean `value` with `key` into the end of structure.
     pub fn write_bool<K>(&mut self, key: K, value: bool)
     where K: ToString {
         self.data.push((key.to_string(), CfuaType::Boolean(value)));
     }
 
-    /// Appends section (`@key`) containing key-value
-    /// pairs into the end of structure.
+    /// Appends section (`@key`) into the end of structure.
     pub fn write_section<K>(&mut self, key: K)
     where K: ToString {
         self.data.push((key.to_string(), CfuaType::Section(())));
