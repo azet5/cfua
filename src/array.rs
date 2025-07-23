@@ -4,6 +4,8 @@
 //! 
 //! A simple number set:
 //! ```
+//! use cfua::array::CfuaIntegerArray;
+//! 
 //! let numbers: CfuaIntegerArray = CfuaIntegerArray::new()
 //!     .push(1)
 //!     .push(2)
@@ -64,11 +66,7 @@ macro_rules! array_type {
     };
 }
 
-/// An array of integers.
 array_type!(CfuaIntegerArray<i64> {CfuaType::Integer});
-/// An array of floating-point numbers.
 array_type!(CfuaFloatArray<f64> {CfuaType::Float});
-/// An array of booleans.
 array_type!(CfuaBoolArray<bool> {CfuaType::Bool});
-/// An array of strings.
 array_type!(CfuaStringArray<String> {CfuaType::String});

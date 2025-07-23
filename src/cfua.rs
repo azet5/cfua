@@ -18,10 +18,12 @@ type CfuaKV = Vec<(String, CfuaType)>;
 /// 
 /// To further read data, use appropriate reading functions.
 /// 
-/// ```
-/// let data: Cfua = Cfua::from_file_path("example.cfua");
+/// ```no_run
+/// use cfua::Cfua;
+/// 
+/// let data: Cfua = Cfua::from_file_path("example.cfua").unwrap();
 /// let example_string: String = data.read_string("example_string").unwrap();
-/// let example_number: i64 = data.read_int("example_number").unwrap();
+/// let example_number: i64 = data.read_integer("example_number").unwrap();
 /// ```
 /// 
 /// To further write data, use appropriate writing functions.
@@ -29,9 +31,11 @@ type CfuaKV = Vec<(String, CfuaType)>;
 /// which can be, for example, written to file.
 /// 
 /// ```
+/// use cfua::Cfua;
+/// 
 /// let mut data: Cfua = Cfua::create();
 /// data.write_string("example_string", "Hello, world!");
-/// data.write_int("example_number", 42);
+/// data.write_integer("example_number", 42);
 /// let str_data: String = data.to_string();
 /// // do something with string
 /// ```
