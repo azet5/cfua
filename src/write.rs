@@ -35,6 +35,9 @@ impl ToString for Cfua {
                                 CfuaType::Integer(el) => output.push_str(el.to_string().as_str()),
                                 CfuaType::Float(el) => output.push_str(el.to_string().as_str()),
                                 CfuaType::String(el) => {
+                                    if i == 0 {
+                                        output.push('\n');
+                                    }
                                     output.push('#');
                                     let split: Vec<_> = el.split('\n').collect();
                                     for i in 0..split.len() {
@@ -48,10 +51,10 @@ impl ToString for Cfua {
                                 CfuaType::Boolean(el) => output.push_str(el.to_string().as_str()),
                                 _ => unreachable!(),
                             }
-                            if i + 1 != value.len() {
-                                if let CfuaType::String(_) = value.index(i) {
-                                    output.push('\n');
-                                } else {
+                            if let CfuaType::String(_) = value.index(i) {
+                                output.push('\n');
+                            } else {
+                                if i + 1 != value.len() {
                                     output.push_str(", ");
                                 }
                             }
@@ -70,7 +73,7 @@ impl ToString for Cfua {
 
 #[cfg(test)]
 mod tests {
-    use crate::Cfua;
+    use crate::{array::ToCfuaArray, Cfua, CfuaIntegerArray, CfuaStringArray};
 
     #[test]
     fn to_string_basic() {
@@ -83,6 +86,47 @@ mod tests {
 r"number-value: 1
 string-value: 'Testing to_string() method
 another-number: -0.123
+".to_string();
+        assert_eq!(structure.to_string(), example)
+    }
+
+    #[test]
+    fn to_string_arrays() {
+        let mut structure = Cfua::create();
+        structure.write_array("fibonacci", CfuaIntegerArray::new()
+            .push(1)
+            .push(1)
+            .push(2)
+            .push(3)
+            .push(5)
+            .push(8)
+            .push(13)
+            .push(21)
+            .push(34)
+            .push(55)
+        );
+        structure.write_array("fruits", CfuaStringArray::new()
+            .push("Apple".to_string())
+            .push("Banana".to_string())
+            .push("Lemon".to_string())
+        );
+        structure.write_array("split-array", CfuaStringArray::new()
+            .push("multi\nline".to_string())
+            .push("single line".to_string())
+        );
+
+        let example =
+r"fibonacci: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+fruits: [
+#'Apple
+#'Banana
+#'Lemon
+]
+split-array: [
+#'multi
+'line
+#'single line
+]
 ".to_string();
         assert_eq!(structure.to_string(), example)
     }
