@@ -27,7 +27,7 @@ impl ToString for Cfua {
                             }
                         }
                     },
-                    CfuaType::Boolean(value) => output.push_str(value.to_string().as_str()),
+                    CfuaType::Bool(value) => output.push_str(value.to_string().as_str()),
                     CfuaType::Array(value) => {
                         output.push('[');
                         for i in 0..value.len() {
@@ -48,7 +48,7 @@ impl ToString for Cfua {
                                         }
                                     }
                                 },
-                                CfuaType::Boolean(el) => output.push_str(el.to_string().as_str()),
+                                CfuaType::Bool(el) => output.push_str(el.to_string().as_str()),
                                 _ => unreachable!(),
                             }
                             if let CfuaType::String(_) = value.index(i) {

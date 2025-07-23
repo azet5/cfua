@@ -69,6 +69,6 @@ array_type!(CfuaIntegerArray<i64> {CfuaType::Integer});
 /// An array of floating-point numbers.
 array_type!(CfuaFloatArray<f64> {CfuaType::Float});
 /// An array of booleans.
-array_type!(CfuaBooleanArray<bool> {CfuaType::Boolean});
+array_type!(CfuaBoolArray<bool> {CfuaType::Bool});
 /// An array of strings.
 array_type!(CfuaStringArray<String> {CfuaType::String});

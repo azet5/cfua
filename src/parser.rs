@@ -22,7 +22,7 @@ enum ValueType {
     Integer,
     Float,
     String,
-    Boolean,
+    Bool,
     Other,
 }
 
@@ -248,10 +248,10 @@ impl ParserData {
             ValueType::Integer => self.array_buffer.push(CfuaType::Integer(self.value_buffer.parse().unwrap())),
             ValueType::Float => self.array_buffer.push(CfuaType::Float(self.value_buffer.parse().unwrap())),
             ValueType::String => self.array_buffer.push(CfuaType::String(self.value_buffer.clone())),
-            ValueType::Boolean => if self.value_buffer == "true" {
-                self.array_buffer.push(CfuaType::Boolean(true));
+            ValueType::Bool => if self.value_buffer == "true" {
+                self.array_buffer.push(CfuaType::Bool(true));
             } else if self.value_buffer == "false" {
-                self.array_buffer.push(CfuaType::Boolean(false));
+                self.array_buffer.push(CfuaType::Bool(false));
             } else {
                 return Err(CfuaError::UnknownKeyword(self.value_buffer.clone()));
             },

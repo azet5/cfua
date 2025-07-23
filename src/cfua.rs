@@ -50,7 +50,7 @@ pub enum CfuaType {
     Integer(i64),
     Float(f64),
     String(String),
-    Boolean(bool),
+    Bool(bool),
     Array(Vec<CfuaType>),
     /// A section, as defined by `@` sign. Note that section's name
     /// is stored as a value's key.
@@ -86,7 +86,7 @@ impl Cfua {
     /// Appends boolean `value` with `key` into the end of structure.
     pub fn write_bool<K>(&mut self, key: K, value: bool)
     where K: ToString {
-        self.data.push((key.to_string(), CfuaType::Boolean(value)));
+        self.data.push((key.to_string(), CfuaType::Bool(value)));
     }
 
     /// Appends section (`@key`) into the end of structure.
@@ -140,7 +140,7 @@ impl Cfua {
     /// and returns its value if found.
     pub fn read_bool<K>(&self, key: K) -> Option<bool>
     where K: ToString {
-        if let Some((_, CfuaType::Boolean(b))) = self.data.iter().find(|p| p.0 == key.to_string()) {
+        if let Some((_, CfuaType::Bool(b))) = self.data.iter().find(|p| p.0 == key.to_string()) {
             Some(*b)
         } else {
             None
@@ -175,7 +175,7 @@ mod tests {
         data.write_string("purpose", "Testing builder functions");
 
         let mut map: CfuaKV = Vec::with_capacity(2);
-        map.push(("is-cfua".to_string(), CfuaType::Boolean(true)));
+        map.push(("is-cfua".to_string(), CfuaType::Bool(true)));
         map.push(("purpose".to_string(), CfuaType::String("Testing builder functions".to_string())));
 
         assert_eq!(data, Cfua { data: map });
