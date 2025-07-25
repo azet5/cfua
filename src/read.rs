@@ -18,7 +18,6 @@ impl Cfua {
     /// content is not proper cfua data.
     pub fn from_string<S>(string: S) -> Result<Cfua, CfuaError>
     where S: ToString {
-        eprintln!("{}", &string.to_string());
         ParserData::new(string.to_string()).parse()
     }
 }
