@@ -2,5 +2,12 @@
 name = "cfua"
 version = "0.1.0"
 edition = "2024"
+license = "BSD-3-Clause"
+authors = ["Adrian Zygmunt"]
+description = "Parser for cfua configuration file format"
+homepage = "https://azet.dev/projects/cfua"
+repository = "https://github.com/azet5/cfua"
+categories = ["parser-implementations", "config"]
+keywords = ["cfua", "config"]
 
 [dependencies]
