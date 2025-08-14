@@ -1,6 +1,24 @@
 # cfua
 
+[![crates.io](https://img.shields.io/crates/v/cfua)](https://crates.io/crates/cfua)
+[![docs.rs](https://img.shields.io/docsrs/cfua/0.1.0)](https://docs.rs/cfua/latest/cfua/)
+
 **cfua** (may be pronounced /siːθuːɑː/ [see-foo-ah]) stands for *configuration file with unpronounceable acronym* and is a data exchange format.
+
+Its syntax is pretty straightforward, and looks like this:
+
+```text
+example-number: 42
+example-text: 'Hello, world!
+few-numbers: [1, -2, 4, -8, 16]
+```
+
+Currently, cfua file may store values with data types:
+- integers
+- floats
+- strings
+- booleans
+- arrays of above
 
 This implementation is written in Rust.
 
@@ -8,25 +26,9 @@ This implementation is written in Rust.
 > This is beta version of library. While it does work, it may have some minor bugs.
 > If you find one, please create an issue.
 
-## A few words about language
-
-Cfua is a text data exchange format. Its syntax is pretty straightforward and looks like this:
-```text
-example-number: 42
-example-text: 'Hello, world!
-few-numbers: [1, -2, 4, -8, 16]
-```
-
-Currently supported data types are:
-- integers
-- floats
-- strings
-- booleans
-- arrays of above
-
 ## Specification
 
-The latest version of language is 0.1, which was released in 2025-07-25.
+The latest version of the language is 0.1, which was released on 2025-07-25.
 
 Language specification is available [here].
 
